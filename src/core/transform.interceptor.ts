@@ -7,19 +7,30 @@ import { RESPONSE_MESSAGE } from 'src/decorator/customize'
 export interface Response<T> {
   statusCode: number
   message?: string
-  data: any
+  metaData: any
   tacgia: string
 }
+
+interface ResponseMessage {
+  message?: string
+  statusCode?: number
+}
+
 @Injectable()
 export class TransformIntercaptor<T> implements NestInterceptor<T, Response<T>> {
   constructor(private reflector: Reflector) {}
   intercept(context: ExecutionContext, next: CallHandler): Observable<Response<T>> {
+    const handler = context.getHandler()
+    const message = this.reflector.get<ResponseMessage>(RESPONSE_MESSAGE, handler).message || ''
+    const codeResponseMessage = this.reflector.get<ResponseMessage>(RESPONSE_MESSAGE, handler).statusCode || ''
+    const codeHeader = context.switchToHttp().getResponse().statusCode
     return next.handle().pipe(
       map((data) => ({
-        statusCode: context.switchToHttp().getResponse().statusCode,
-        message: this.reflector.get<string>(RESPONSE_MESSAGE, context.getHandler()) || '',
-        data: data,
-        tacgia: 'Vu Duc Bo With User Service'
+        // statusCode: context.switchToHttp().getResponse().statusCode,
+        statusCode: codeResponseMessage ? codeResponseMessage : codeHeader,
+        message,
+        metaData: data,
+        tacgia: 'Vu Duc Bo'
       }))
     )
   }

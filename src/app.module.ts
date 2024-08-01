@@ -6,9 +6,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { ScheduleModule } from '@nestjs/schedule'
 import { MongooseModule } from '@nestjs/mongoose'
 import { CheckSignMiddleware } from './middleware/checkSign.middleware'
-import { CacheModule } from '@nestjs/cache-manager'
-import * as redisStore from 'cache-manager-ioredis'
 import { CONNECTION_MASTER, CONNECTION_SLAVE } from './constant/connection.config'
+import { CompaniesModule } from './companies/companies.module'
+import { UploadModule } from './upload/upload.module'
 
 @Module({
   imports: [
@@ -30,16 +30,9 @@ import { CONNECTION_MASTER, CONNECTION_SLAVE } from './constant/connection.confi
         uri: configService.get<string>('MONGO_URL_SLAVE')
       })
     }),
-    CacheModule.register({
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      store: redisStore,
-      host: 'localhost',
-      port: 6379
-      // ttl: 1000
-    }),
-
-    UserModule
+    UserModule,
+    CompaniesModule,
+    UploadModule
   ],
   controllers: [AppController],
   providers: [AppService]
@@ -49,3 +42,4 @@ export class AppModule implements NestModule {
     consumer.apply(CheckSignMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL })
   }
 }
+// export class AppModule {}

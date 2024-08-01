@@ -26,7 +26,7 @@ export class SampleSchema {
   @Prop()
   updatedAt: Date
 
-  @Prop()
+  @Prop({ default: false })
   isDeleted: boolean
 
   @Prop()

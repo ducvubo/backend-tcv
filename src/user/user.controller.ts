@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, UseGuards, Request } from '@nestjs/common'
 import { UserService } from './user.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { ResponseMessage, User } from 'src/decorator/customize'
-import { AuthGuardWithSSO } from 'src/guard/auth.guard'
+import { AuthGuardWithSSO } from 'src/guard/authSSO.guard'
 import { IUser } from './user.interface'
 import { Request as RequestExpress } from 'express'
 

@@ -4,10 +4,14 @@ import { join } from 'path'
 import { NestExpressApplication } from '@nestjs/platform-express'
 import { TransformIntercaptor } from './core/transform.interceptor'
 import { ConfigService } from '@nestjs/config'
-import { ValidationPipe } from '@nestjs/common'
+import { ValidationPipe, VersioningType } from '@nestjs/common'
 import { initRedis } from './dbs/init.redis'
+import * as bodyParser from 'body-parser'
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
+
+  app.use(bodyParser.json())
+  app.use(bodyParser.urlencoded({ extended: true }))
   const reflector = app.get(Reflector)
 
   const configService = app.get(ConfigService)
@@ -24,6 +28,13 @@ async function bootstrap() {
   })
   app.enableCors()
   initRedis()
+
+  app.setGlobalPrefix('api')
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: ['1', '2']
+  })
+
   await app.listen(configService.get<string>('PORT'))
 }
 bootstrap()

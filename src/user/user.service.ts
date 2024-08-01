@@ -2,7 +2,7 @@ import { BadRequestException, HttpException, HttpStatus, Injectable, Unauthorize
 import { CreateUserDto } from './dto/create-user.dto'
 import { InjectModel } from '@nestjs/mongoose'
 // import { SoftDeleteModel } from 'soft-delete-plugin-mongoose'
-import { User, UserDocument } from './schema/user.schema'
+import { User, UserDocument } from './model/user.schema'
 // import { compareSync, genSaltSync, hashSync } from 'bcryptjs'
 import mongoose, { Model } from 'mongoose'
 import { ConfigService } from '@nestjs/config'
@@ -63,7 +63,7 @@ export class UserService {
       }
     })
     const data = await res.json()
-    if (data.statusCode === 401) throw new UnauthorizedException('Token không hợp lệ')
+    if (data.statusCode === 401) throw new UnauthorizedException('Token không hợp lệ2')
 
     const isEmailExist = await this.userSlaveModel.findOne({ email: data.data.email, isDeleted: false }).lean()
 

@@ -1,14 +1,12 @@
-import { CACHE_MANAGER } from '@nestjs/cache-manager'
-import { HttpException, HttpStatus, Inject, Injectable, NestMiddleware } from '@nestjs/common'
+import { HttpException, HttpStatus, Injectable, NestMiddleware } from '@nestjs/common'
 import { Request, Response, NextFunction } from 'express'
 // import md5 from 'md5'
 import * as md5 from 'md5'
-import { Cache } from 'cache-manager'
 import { SIGN } from 'src/constant/key.redis'
-import { getCacheIO, setCacheIOExpiration } from 'src/repositories/cache.repo'
+import { getCacheIO, setCacheIOExpiration } from 'src/config/cache.config'
 @Injectable()
 export class CheckSignMiddleware implements NestMiddleware {
-  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
+  constructor() {}
   genSign(headerKey) {
     const keyToken = 'vuducbokeytoken'
     const sortKeys = []

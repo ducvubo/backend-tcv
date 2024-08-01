@@ -12,7 +12,7 @@ export class AuthGuardWithSSO implements CanActivate {
     const request = context.switchToHttp().getRequest()
     const access_token = request.headers['authorization'] ? request.headers['authorization'].split(' ')[1] : null
     const refresh_token = request.headers['x-rf-tk'] ? request.headers['x-rf-tk'] : null
-    if (!refresh_token || !access_token) throw new HttpException('Token không hợp lệ', HttpStatus.UNAUTHORIZED)
+    if (!refresh_token || !access_token) throw new HttpException('Token không hợp lệ1', HttpStatus.UNAUTHORIZED)
     await fetch(`${this.configService.get<string>('SSO_APP')}/auth/me`, {
       headers: {
         Authorization: `Bearer ${access_token}`,
