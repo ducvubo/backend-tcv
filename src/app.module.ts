@@ -9,6 +9,9 @@ import { CheckSignMiddleware } from './middleware/checkSign.middleware'
 import { CONNECTION_MASTER, CONNECTION_SLAVE } from './constant/connection.config'
 import { CompaniesModule } from './companies/companies.module'
 import { UploadModule } from './upload/upload.module'
+import { CheckApiKeyMiddleware } from './middleware/checkApiKey.middleware'
+import { ApikeysModule } from './apikeys/apikeys.module'
+import { AuthCompanyModule } from './auth-company/auth-company.module'
 
 @Module({
   imports: [
@@ -19,7 +22,8 @@ import { UploadModule } from './upload/upload.module'
       inject: [ConfigService],
       connectionName: CONNECTION_MASTER,
       useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGO_URL_MASTER')
+        uri: configService.get<string>('MONGO_URL_MASTER'),
+        directConnection: true
       })
     }),
     MongooseModule.forRootAsync({
@@ -27,19 +31,26 @@ import { UploadModule } from './upload/upload.module'
       inject: [ConfigService],
       connectionName: CONNECTION_SLAVE,
       useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGO_URL_SLAVE')
+        uri: configService.get<string>('MONGO_URL_SLAVE'),
+        directConnection: true
       })
     }),
     UserModule,
     CompaniesModule,
-    UploadModule
+    UploadModule,
+    ApikeysModule,
+    AuthCompanyModule
   ],
   controllers: [AppController],
   providers: [AppService]
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(CheckSignMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL })
-  }
-}
-// export class AppModule {}
+// export class AppModule implements NestModule {
+//   configure(consumer: MiddlewareConsumer) {
+//     consumer
+//       .apply(CheckApiKeyMiddleware)
+//       .forRoutes({ path: '*', method: RequestMethod.ALL })
+//       .apply(CheckSignMiddleware)
+//       .forRoutes({ path: '*', method: RequestMethod.ALL })
+//   }
+// }
+export class AppModule {}

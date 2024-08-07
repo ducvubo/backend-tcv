@@ -17,6 +17,7 @@ import { CompanyWriteRepository } from './model/company.write.repo'
     UserModule
   ],
   controllers: [CompaniesController],
-  providers: [CompaniesService, CompanyReadRepository, CompanyWriteRepository]
+  providers: [CompaniesService, CompanyReadRepository, CompanyWriteRepository],
+  exports: [CompaniesService]
 })
 export class CompaniesModule {}

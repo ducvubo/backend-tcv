@@ -54,8 +54,10 @@ export class CreateCompanyDto {
   }
 
   @IsNotEmpty({ message: 'Mô tả công ty không được để trống' })
-  @IsString({ message: 'Mô tả công ty phải là chuỗi' })
-  company_description: string
+  company_description: {
+    text: string
+    html: string
+  }
 
   @IsString({ message: 'Website công ty phải là chuỗi' })
   company_website: string

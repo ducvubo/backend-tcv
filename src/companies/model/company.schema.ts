@@ -36,8 +36,11 @@ export class Company extends SampleSchema {
     custom: string
   }
 
-  @Prop({ type: String, required: true })
-  company_description: string
+  @Prop({ type: Object, required: true })
+  company_description: {
+    text: string
+    html: string
+  }
 
   @Prop()
   company_website: string

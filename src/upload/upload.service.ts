@@ -15,7 +15,6 @@ export class UploadService {
         public_id: newFileName,
         folder: folderName
       })
-      console.log('result::::::::', result)
       return result
     } catch (error) {
       console.log('upload error: ' + error)
@@ -23,13 +22,14 @@ export class UploadService {
   }
 
   async uploadImageFromLocal({ path, folderName, image_name }) {
+    console.log(path, folderName, image_name)
     try {
       const result = await cloudinary.uploader.upload(path, {
         folder: folderName
       })
       return {
         image_url_cloud: result.secure_url,
-        image_url_local: `${this.configService.get<string>('SERVER')}/images/${folderName}/${image_name}`,
+        image_url_local: `${this.configService.get<string>('SERVER')}/${folderName}/${image_name}`,
         image_url_custom: await cloudinary.url(result.public_id, {
           height: 100,
           width: 100,

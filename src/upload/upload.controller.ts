@@ -18,6 +18,7 @@ export class UploadController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadImageFromLocal(@UploadedFile() file: Express.Multer.File, @Req() req: any) {
     if (!file) {
+      console.log('::::::::::::')
       throw new Error('No file provided')
     }
     return await this.uploadService.uploadImageFromLocal({

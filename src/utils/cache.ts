@@ -8,7 +8,7 @@ export const setCacheIO = async ({ key, value }) => {
     throw new Error('Redis client not initialized')
   }
   try {
-    return await redisCache.set(key, value)
+    return await redisCache.set(key, JSON.stringify(value))
   } catch (error) {
     throw new Error(error.message)
   }
@@ -19,7 +19,7 @@ export const setCacheIOExpiration = async ({ key, value, expirationInSeconds }) 
     throw new Error('Redis client not initialized')
   }
   try {
-    return await redisCache.set(key, value, 'EX', expirationInSeconds)
+    return await redisCache.set(key, JSON.stringify(value), 'EX', expirationInSeconds)
   } catch (error) {
     throw new Error(error.message)
   }
@@ -30,7 +30,8 @@ export const getCacheIO = async ({ key }) => {
     throw new Error('Redis client not initialized')
   }
   try {
-    return await redisCache.get(key)
+    const result = await redisCache.get(key)
+    return JSON.parse(result)
   } catch (error) {
     throw new Error(error.message)
   }

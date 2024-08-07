@@ -79,11 +79,13 @@ export class UserService {
       })
     }
     return {
-      message: 'login sso ok ok ok'
+      access_token: token.access_token,
+      refresh_token: token.refresh_token
     }
   }
 
   async refreshToken({ refresh_token }: { refresh_token: string }) {
+    if (!refresh_token) throw new HttpException('Vui lòng đăng nhập', HttpStatus.UNAUTHORIZED)
     try {
       const res = await fetch(`${this.configService.get<string>('SSO_APP')}/auth/refresh-token`, {
         method: 'POST',
