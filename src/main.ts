@@ -35,6 +35,16 @@ async function bootstrap() {
     defaultVersion: ['1', '2']
   })
 
+  app.use((error, req, res, next) => {
+    const statusCode = error.status || 500
+    return res.status(statusCode).json({
+      status: 'error',
+      code: statusCode,
+      stack: error.stack,
+      message: error.message || 'Internal Server Error'
+    })
+  })
+
   await app.listen(configService.get<string>('PORT'))
 }
 bootstrap()

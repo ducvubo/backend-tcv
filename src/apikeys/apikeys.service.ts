@@ -19,7 +19,6 @@ export class ApikeysService {
     status: boolean
     permissions: string[]
   }) {
-    // console.log(permission)
     return await this.apiKeyWriteRepository.createApiKey({
       key,
       secret,

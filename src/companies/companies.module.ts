@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { forwardRef, Module } from '@nestjs/common'
 import { CompaniesService } from './companies.service'
 import { CompaniesController } from './companies.controller'
 import { MongooseModule } from '@nestjs/mongoose'
@@ -8,13 +8,16 @@ import { CONNECTION_MASTER, CONNECTION_SLAVE } from 'src/constant/connection.con
 import { UserModule } from 'src/user/user.module'
 import { CompanyReadRepository } from './model/company.read.repo'
 import { CompanyWriteRepository } from './model/company.write.repo'
+import { AuthCompanyModule } from 'src/auth-company/auth-company.module'
+import { AuthCompanyService } from 'src/auth-company/auth-company.service'
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Company.name, schema: CompanySchema }], CONNECTION_MASTER),
     MongooseModule.forFeature([{ name: Company.name, schema: CompanySchema }], CONNECTION_SLAVE),
     ConfigModule,
-    UserModule
+    UserModule,
+    forwardRef(() => AuthCompanyModule)
   ],
   controllers: [CompaniesController],
   providers: [CompaniesService, CompanyReadRepository, CompanyWriteRepository],

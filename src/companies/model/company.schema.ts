@@ -66,12 +66,14 @@ export class Company extends SampleSchema {
   @Prop({ type: String, required: true })
   company_role: string
 
+  //trạng thái tài khoản
   @Prop({ type: String, required: true, enum: ['Inactive', 'Active', 'Warning'], default: 'Inactive' })
   company_status: string
 
   @Prop({ type: Boolean, required: true, default: true })
   company_active: boolean
 
+  //verify email
   @Prop({ type: String, required: true, default: 'waiting', enum: ['waiting', 'verify'] })
   company_verify: string
 

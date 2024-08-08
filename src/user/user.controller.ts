@@ -22,7 +22,6 @@ export class UserController {
   @Post('sso')
   @ResponseMessage('Login with sso')
   async loginWithSSO(@Body() token: { access_token: string; refresh_token: string }) {
-    console.log(token)
     return await this.usersService.loginWithSSO(token)
   }
 

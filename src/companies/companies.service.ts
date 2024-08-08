@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { CreateCompanyDto } from './dto/create_company.dto'
 import { IUser } from 'src/user/user.interface'
@@ -10,13 +10,16 @@ import mongoose from 'mongoose'
 import { getCacheIO, setCacheIOExpiration } from 'src/utils/cache'
 import { KEY_COMPANIES_UPDATE } from 'src/constant/key.redis'
 import { UpdateCompanyDto } from './dto/update_company.dto'
+import { AuthCompanyService } from 'src/auth-company/auth-company.service'
 
 @Injectable()
 export class CompaniesService {
   constructor(
     private configService: ConfigService,
     private readonly companyReadRepository: CompanyReadRepository,
-    private readonly companyWriteRepository: CompanyWriteRepository
+    private readonly companyWriteRepository: CompanyWriteRepository,
+    @Inject(forwardRef(() => AuthCompanyService))
+    private readonly authCompanyService: AuthCompanyService
   ) {}
 
   getHassPassword = (password: string) => {
@@ -75,8 +78,8 @@ export class CompaniesService {
     }
   }
 
-  async getCompanyById({ id }: { id: string }) {
-    if (!mongoose.Types.ObjectId.isValid(id)) throw new HttpException('Id không hợp lệ', HttpStatus.BAD_REQUEST)
+  async getCompanyById({ id }: { id: any }) {
+    // if (!mongoose.Types.ObjectId.isValid(id)) throw new HttpException('Id không hợp lệ', HttpStatus.BAD_REQUEST)
 
     const companyRedis = await getCacheIO({ key: `${KEY_COMPANIES_UPDATE}${id}` })
     if (companyRedis) return companyRedis
@@ -102,12 +105,17 @@ export class CompaniesService {
   }
 
   async deleteCompany({ id, user }: { id: string; user: IUser }) {
-    if (!id) throw new HttpException('Không tìm thấy id ở url', HttpStatus.BAD_REQUEST)
-    if (!mongoose.Types.ObjectId.isValid(id)) throw new HttpException('Id không h��p lệ', HttpStatus.BAD_REQUEST)
-    const deleted = await this.companyWriteRepository.deleteCompany({ id, user })
-    if (!deleted) throw new HttpException('Xóa công ty không thành công', HttpStatus.BAD_REQUEST)
-    await setCacheIOExpiration({ key: `${KEY_COMPANIES_UPDATE}${id}`, value: '', expirationInSeconds: 1 })
-    return null
+    try {
+      if (!id) throw new HttpException('Không tìm thấy id ở url', HttpStatus.BAD_REQUEST)
+      if (!mongoose.Types.ObjectId.isValid(id)) throw new HttpException('Id không h��p lệ', HttpStatus.BAD_REQUEST)
+      const deleted = await this.companyWriteRepository.deleteCompany({ id, user })
+      if (!deleted) throw new HttpException('Xóa công ty không thành công', HttpStatus.BAD_REQUEST)
+      this.authCompanyService.deleteToken({ _id: id })
+      await setCacheIOExpiration({ key: `${KEY_COMPANIES_UPDATE}${id}`, value: '', expirationInSeconds: 1 })
+      return null
+    } catch (error) {
+      throw new HttpException('Xóa công ty thất bại', HttpStatus.BAD_REQUEST)
+    }
   }
 
   async getCompanyByEmail(email: string) {

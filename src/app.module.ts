@@ -12,6 +12,7 @@ import { UploadModule } from './upload/upload.module'
 import { CheckApiKeyMiddleware } from './middleware/checkApiKey.middleware'
 import { ApikeysModule } from './apikeys/apikeys.module'
 import { AuthCompanyModule } from './auth-company/auth-company.module'
+import { JobsModule } from './jobs/jobs.module'
 
 @Module({
   imports: [
@@ -39,18 +40,19 @@ import { AuthCompanyModule } from './auth-company/auth-company.module'
     CompaniesModule,
     UploadModule,
     ApikeysModule,
-    AuthCompanyModule
+    AuthCompanyModule,
+    JobsModule
   ],
   controllers: [AppController],
   providers: [AppService]
 })
-// export class AppModule implements NestModule {
-//   configure(consumer: MiddlewareConsumer) {
-//     consumer
-//       .apply(CheckApiKeyMiddleware)
-//       .forRoutes({ path: '*', method: RequestMethod.ALL })
-//       .apply(CheckSignMiddleware)
-//       .forRoutes({ path: '*', method: RequestMethod.ALL })
-//   }
-// }
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(CheckApiKeyMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL })
+      .apply(CheckSignMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL })
+  }
+}
+// export class AppModule {}

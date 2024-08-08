@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { HydratedDocument, Types } from 'mongoose'
-import { User } from 'src/user/model/user.schema'
+import { Company } from 'src/companies/model/company.schema'
 import { SampleSchema } from 'src/utils/sample.schema'
 // import { Role } from 'src/roles/schemas/role.schema'
 
@@ -13,7 +13,7 @@ export interface IRefreshToken {
 }
 @Schema({ timestamps: true })
 export class RefreshToken extends SampleSchema {
-  @Prop({ type: Types.ObjectId, ref: User.name, required: true })
+  @Prop({ type: Types.ObjectId, ref: Company.name, required: true })
   rf_company_id: Types.ObjectId
 
   @Prop({ required: true })

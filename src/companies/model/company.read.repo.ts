@@ -8,7 +8,7 @@ export class CompanyReadRepository {
   constructor(@InjectModel(Company.name, CONNECTION_SLAVE) private companySlaveModel: Model<CompanyDocument>) {}
 
   async getCompanyByEmail({ company_email }: { company_email: string }) {
-    return this.companySlaveModel.findOne({ company_email: company_email }).exec()
+    return this.companySlaveModel.findOne({ company_email: company_email, isDeleted: false }).exec()
   }
 
   async getCompanyFilter({ filter }) {
@@ -39,8 +39,10 @@ export class CompanyReadRepository {
 
   async getCompanyById({ _id }: { _id: string }) {
     return this.companySlaveModel
-      .findById(_id)
-      .select('-company_password -createdAt -createdBy -updatedAt -__v -isDeleted')
+      .findOne({ _id, isDeleted: false, company_verify: 'verify', company_active: true })
+      .select(
+        '-company_password -createdAt -createdBy -updatedAt -__v -isDeleted -deletedBy -company_active -company_verify'
+      )
       .exec()
   }
 }
