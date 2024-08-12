@@ -19,7 +19,7 @@ interface CreatedBy {
   email: string
 }
 
-interface ICompany {
+export interface ICompany {
   _id: string
   createdBy: CreatedBy
   isDeleted: boolean

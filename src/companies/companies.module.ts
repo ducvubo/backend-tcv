@@ -6,10 +6,9 @@ import { ConfigModule } from '@nestjs/config'
 import { Company, CompanySchema } from './model/company.schema'
 import { CONNECTION_MASTER, CONNECTION_SLAVE } from 'src/constant/connection.config'
 import { UserModule } from 'src/user/user.module'
-import { CompanyReadRepository } from './model/company.read.repo'
-import { CompanyWriteRepository } from './model/company.write.repo'
+import { CompanyReadRepository } from './model/company-read.repo'
+import { CompanyWriteRepository } from './model/company-write.repo'
 import { AuthCompanyModule } from 'src/auth-company/auth-company.module'
-import { AuthCompanyService } from 'src/auth-company/auth-company.service'
 
 @Module({
   imports: [

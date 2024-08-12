@@ -5,7 +5,7 @@ import { NestExpressApplication } from '@nestjs/platform-express'
 import { TransformIntercaptor } from './core/transform.interceptor'
 import { ConfigService } from '@nestjs/config'
 import { ValidationPipe, VersioningType } from '@nestjs/common'
-import { initRedis } from './dbs/init.redis'
+import { initRedis } from './init/init.redis'
 import * as bodyParser from 'body-parser'
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)

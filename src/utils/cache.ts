@@ -1,5 +1,5 @@
 'use strict'
-import { getRedis } from '../dbs/init.redis'
+import { getRedis } from '../init/init.redis'
 
 const redisCache = getRedis().instanceConnect
 
