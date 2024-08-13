@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common'
-import amqp from 'amqp-connection-manager'
-import { channel } from 'diagnostics_channel'
 import { IDataQueueJob } from 'src/constant/queue.interface'
 import { initRabbitMQ } from 'src/init/init.rabitmq'
 

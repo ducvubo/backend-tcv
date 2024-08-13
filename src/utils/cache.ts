@@ -36,3 +36,14 @@ export const getCacheIO = async ({ key }) => {
     throw new Error(error.message)
   }
 }
+
+export const deleteCacheIO = async ({ key }) => {
+  if (!redisCache) {
+    throw new Error('Redis client not initialized')
+  }
+  try {
+    return await redisCache.del(key)
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}

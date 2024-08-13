@@ -4,20 +4,28 @@ import { ICompany } from 'src/companies/company.interface'
 import { JobWriteRepository } from './model/job-write.repo'
 import { JobReadRepository } from './model/job-read.repo'
 import aqp from 'api-query-params'
-import { getCacheIO, setCacheIOExpiration } from 'src/utils/cache'
-import { KEY_JOBS_UPDATE } from 'src/constant/key.redis'
+import { deleteCacheIO, getCacheIO, setCacheIO, setCacheIOExpiration } from 'src/utils/cache'
 import { UpdateJobDto } from './dto/update-job.dto'
 import mongoose from 'mongoose'
 import { JobQueue } from './jobs.rabitmq'
+import { KEY_JOBS, KEY_JOBS_DELETE, KEY_JOBS_NULL } from 'src/constant/key.redis'
 
 @Injectable()
 export class JobsService {
   constructor(
     private readonly jobWriteRepository: JobWriteRepository,
     private readonly jobReadRepository: JobReadRepository,
+    private readonly jobQueue: JobQueue
   ) {}
   async createJob(createJobDto: CreateJobDto, company: ICompany) {
-    return await this.jobWriteRepository.createJob(createJobDto, company)
+    const newJob = await this.jobWriteRepository.createJob(createJobDto, company)
+    if (!newJob) {
+      throw new HttpException('Tạo job không thành công', HttpStatus.BAD_REQUEST)
+    } else {
+      this.jobQueue.sendToQueueJob({ action: 'createJob', data: newJob })
+      await setCacheIO({ key: `${KEY_JOBS}${newJob._id}`, value: newJob })
+    }
+    return newJob
   }
 
   async getAllJobWithCompany(currentPage: number, limit: number, qs: string, company: ICompany) {
@@ -57,17 +65,19 @@ export class JobsService {
   }
 
   async getJobWithCompanyById({ id, company }: { id: any; company: ICompany }) {
-    // if (!mongoose.Types.ObjectId.isValid(id)) throw new HttpException('Id không hợp lệ', HttpStatus.BAD_REQUEST)
+    if (!mongoose.Types.ObjectId.isValid(id)) throw new HttpException('Id không hợp lệ', HttpStatus.BAD_REQUEST)
 
-    const companyRedis = await getCacheIO({ key: `${KEY_JOBS_UPDATE}${id}` })
-    if (companyRedis) return companyRedis
+    const jobRedis = await getCacheIO({ key: `${KEY_JOBS}${id}` })
+    if (jobRedis) return jobRedis
 
-    const companyMongo = await this.jobReadRepository.getJobWithCompanyById({ _id: id, company })
-    if (!companyMongo) throw new HttpException('Công ty không tồn tại', HttpStatus.BAD_REQUEST)
-    const valueCache = companyMongo ? companyMongo : null
-    await setCacheIOExpiration({ key: `${KEY_JOBS_UPDATE}${id}`, value: valueCache, expirationInSeconds: 30 })
+    const jobMongo = await this.jobReadRepository.getJobWithCompanyById({ _id: id, company })
+    if (!jobMongo) {
+      await setCacheIOExpiration({ key: `${KEY_JOBS_NULL}${id}`, value: null, expirationInSeconds: 30 })
+      throw new HttpException('Công ty không tồn tại', HttpStatus.BAD_REQUEST)
+    }
+    await setCacheIO({ key: `${KEY_JOBS}${id}`, value: jobMongo })
 
-    return companyMongo
+    return jobMongo
   }
 
   async updateJob(id: string, updateJobDto: UpdateJobDto, company: ICompany) {
@@ -77,7 +87,8 @@ export class JobsService {
     if (!updated) {
       throw new HttpException('Cập nhật job không thành công', HttpStatus.BAD_REQUEST)
     }
-    await setCacheIOExpiration({ key: `${KEY_JOBS_UPDATE}${id}`, value: updated, expirationInSeconds: 30 })
+    this.jobQueue.sendToQueueJob({ action: 'updateJob', data: updated })
+    await setCacheIO({ key: `${KEY_JOBS}${id}`, value: updated })
     return updated
   }
 
@@ -87,7 +98,9 @@ export class JobsService {
       if (!mongoose.Types.ObjectId.isValid(id)) throw new HttpException('Id không h��p lệ', HttpStatus.BAD_REQUEST)
       const deleted = await this.jobWriteRepository.deleteJob({ id, company })
       if (!deleted) throw new HttpException('Xóa công ty không thành công', HttpStatus.BAD_REQUEST)
-      await setCacheIOExpiration({ key: `${KEY_JOBS_UPDATE}${id}`, value: '', expirationInSeconds: 1 })
+      this.jobQueue.sendToQueueJob({ action: 'updateJob', data: deleted })
+      await deleteCacheIO({ key: `${KEY_JOBS}${id}` })
+      await setCacheIO({ key: `${KEY_JOBS_DELETE}${id}`, value: deleted })
       return null
     } catch (error) {
       throw new HttpException('Xóa công ty thất bại', HttpStatus.BAD_REQUEST)

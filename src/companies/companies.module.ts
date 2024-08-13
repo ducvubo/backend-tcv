@@ -9,6 +9,7 @@ import { UserModule } from 'src/user/user.module'
 import { CompanyReadRepository } from './model/company-read.repo'
 import { CompanyWriteRepository } from './model/company-write.repo'
 import { AuthCompanyModule } from 'src/auth-company/auth-company.module'
+import { CompanyQueue } from './companies.rabbitmq'
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { AuthCompanyModule } from 'src/auth-company/auth-company.module'
     forwardRef(() => AuthCompanyModule)
   ],
   controllers: [CompaniesController],
-  providers: [CompaniesService, CompanyReadRepository, CompanyWriteRepository],
+  providers: [CompaniesService, CompanyReadRepository, CompanyWriteRepository, CompanyQueue],
   exports: [CompaniesService]
 })
 export class CompaniesModule {}

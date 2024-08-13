@@ -4,13 +4,9 @@ import { Model } from 'mongoose'
 import { Job, JobDocument } from './job.model'
 import { CreateJobDto } from '../dto/create-job.dto'
 import { ICompany } from 'src/companies/company.interface'
-import { JobQueue } from '../jobs.rabitmq'
 
 export class JobWriteRepository {
-  constructor(
-    @InjectModel(Job.name, CONNECTION_MASTER) private jobMaterModel: Model<JobDocument>,
-    private readonly jobQueue: JobQueue
-  ) {}
+  constructor(@InjectModel(Job.name, CONNECTION_MASTER) private jobMaterModel: Model<JobDocument>) {}
 
   async createJob(createJobDto: CreateJobDto, company: ICompany) {
     const {
@@ -64,8 +60,6 @@ export class JobWriteRepository {
         _id: _id
       }
     })
-    console.log(newJob)
-    this.jobQueue.sendToQueueJob({ action: 'createJob', data: newJob })
     return newJob
   }
 

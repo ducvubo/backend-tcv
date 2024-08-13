@@ -7,10 +7,11 @@ import { CompanyWriteRepository } from './model/company-write.repo'
 import { compareSync, genSaltSync, hashSync } from 'bcryptjs'
 import aqp from 'api-query-params'
 import mongoose from 'mongoose'
-import { getCacheIO, setCacheIOExpiration } from 'src/utils/cache'
-import { KEY_COMPANIES_UPDATE } from 'src/constant/key.redis'
+import { deleteCacheIO, getCacheIO, setCacheIO, setCacheIOExpiration } from 'src/utils/cache'
+import { KEY_COMPANIES, KEY_COMPANIES_DELETE, KEY_COMPANIES_NULL } from 'src/constant/key.redis'
 import { UpdateCompanyDto } from './dto/update_company.dto'
 import { AuthCompanyService } from 'src/auth-company/auth-company.service'
+import { CompanyQueue } from './companies.rabbitmq'
 
 @Injectable()
 export class CompaniesService {
@@ -19,7 +20,8 @@ export class CompaniesService {
     private readonly companyReadRepository: CompanyReadRepository,
     private readonly companyWriteRepository: CompanyWriteRepository,
     @Inject(forwardRef(() => AuthCompanyService))
-    private readonly authCompanyService: AuthCompanyService
+    private readonly authCompanyService: AuthCompanyService,
+    private readonly companyQueue: CompanyQueue
   ) {}
 
   getHassPassword = (password: string) => {
@@ -42,6 +44,12 @@ export class CompaniesService {
       { ...createCompanyDto, company_password: hashPassword },
       user
     )
+    if (!newCompany) {
+      throw new HttpException('Tạo job không thành công', HttpStatus.BAD_REQUEST)
+    } else {
+      this.companyQueue.sendToQueueCompany({ action: 'createCompany', data: newCompany })
+      await setCacheIO({ key: `${KEY_COMPANIES}${newCompany._id}`, value: newCompany })
+    }
 
     return {
       _id: newCompany._id,
@@ -79,15 +87,17 @@ export class CompaniesService {
   }
 
   async getCompanyById({ id }: { id: any }) {
-    // if (!mongoose.Types.ObjectId.isValid(id)) throw new HttpException('Id không hợp lệ', HttpStatus.BAD_REQUEST)
+    if (!mongoose.Types.ObjectId.isValid(id)) throw new HttpException('Id không hợp lệ', HttpStatus.BAD_REQUEST)
 
-    const companyRedis = await getCacheIO({ key: `${KEY_COMPANIES_UPDATE}${id}` })
+    const companyRedis = await getCacheIO({ key: `${KEY_COMPANIES}${id}` })
     if (companyRedis) return companyRedis
 
     const companyMongo = await this.companyReadRepository.getCompanyById({ _id: id })
-    if (!companyMongo) throw new HttpException('Công ty không tồn tại', HttpStatus.BAD_REQUEST)
-    const valueCache = companyMongo ? companyMongo : null
-    await setCacheIOExpiration({ key: `${KEY_COMPANIES_UPDATE}${id}`, value: valueCache, expirationInSeconds: 30 })
+    if (!companyMongo) {
+      await setCacheIOExpiration({ key: `${KEY_COMPANIES_NULL}${id}`, value: null, expirationInSeconds: 30 })
+      throw new HttpException('Công ty không tồn tại', HttpStatus.BAD_REQUEST)
+    }
+    await setCacheIO({ key: `${KEY_COMPANIES}${id}`, value: companyMongo })
 
     return companyMongo
   }
@@ -100,7 +110,8 @@ export class CompaniesService {
     if (!updated) {
       throw new HttpException('Cập nhật công ty không thành công', HttpStatus.BAD_REQUEST)
     }
-    await setCacheIOExpiration({ key: `${KEY_COMPANIES_UPDATE}${_id}`, value: updated, expirationInSeconds: 30 })
+    this.companyQueue.sendToQueueCompany({ action: 'updateCompany', data: updated })
+    await setCacheIO({ key: `${KEY_COMPANIES}${_id}`, value: updated })
     return updated
   }
 
@@ -110,8 +121,9 @@ export class CompaniesService {
       if (!mongoose.Types.ObjectId.isValid(id)) throw new HttpException('Id không h��p lệ', HttpStatus.BAD_REQUEST)
       const deleted = await this.companyWriteRepository.deleteCompany({ id, user })
       if (!deleted) throw new HttpException('Xóa công ty không thành công', HttpStatus.BAD_REQUEST)
-      this.authCompanyService.deleteToken({ _id: id })
-      await setCacheIOExpiration({ key: `${KEY_COMPANIES_UPDATE}${id}`, value: '', expirationInSeconds: 1 })
+      this.companyQueue.sendToQueueCompany({ action: 'updateCompany', data: deleted })
+      await deleteCacheIO({ key: `${KEY_COMPANIES}${id}` })
+      await setCacheIO({ key: `${KEY_COMPANIES_DELETE}${id}`, value: deleted })
       return null
     } catch (error) {
       throw new HttpException('Xóa công ty thất bại', HttpStatus.BAD_REQUEST)

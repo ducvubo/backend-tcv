@@ -41,7 +41,7 @@ export class JobsController {
   }
 
   @Patch(':id')
-  @ResponseMessage('Cập nhật thông tin công ty')
+  @ResponseMessage('Cập nhật thông tin job')
   @UseGuards(AuthGuardCompany)
   async updateCompany(@Param('id') id: string, @Body() upDateJobDto: UpdateJobDto, @Company() company: ICompany) {
     return await this.jobsService.updateJob(id, upDateJobDto, company)
@@ -62,15 +62,19 @@ export class JobsController {
   //   }
   // }
 
-  @Post('test1')
-  @ResponseMessage('Test elastic search')
-  async search(q: string) {
-    const result = await this.elasticsearchService.search({
-      index: 'jobs'
-    })
-    // const result = await this.elasticsearchService.indices.delete({
-    //   index: 
-    // })
-    return result
-  }
+  // @Post('test1')
+  // @ResponseMessage('Test elastic search')
+  // async search(q: string) {
+  //   try {
+  //     const result = await this.elasticsearchService.search({
+  //       index: 'els_jobsearchcompanies'
+  //     })
+  //     // const result = await this.elasticsearchService.indices.delete({
+  //     //   index:
+  //     // })
+  //     return result
+  //   } catch (error) {
+  //     console.log('error', error)
+  //   }
+  // }
 }

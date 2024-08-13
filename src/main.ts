@@ -7,12 +7,16 @@ import { ConfigService } from '@nestjs/config'
 import { ValidationPipe, VersioningType } from '@nestjs/common'
 import { initRedis } from './init/init.redis'
 import * as bodyParser from 'body-parser'
+import { connectQueueCompany, ConnectQueueJob } from './utils/rabbitmq.check'
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
 
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }))
   const reflector = app.get(Reflector)
+
+  connectQueueCompany()
+  ConnectQueueJob()
 
   const configService = app.get(ConfigService)
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }))

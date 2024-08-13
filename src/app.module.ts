@@ -46,13 +46,13 @@ import { JobsModule } from './jobs/jobs.module'
   controllers: [AppController],
   providers: [AppService]
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(CheckApiKeyMiddleware)
-      .forRoutes({ path: '*', method: RequestMethod.ALL })
-      .apply(CheckSignMiddleware)
-      .forRoutes({ path: '*', method: RequestMethod.ALL })
-  }
-}
-// export class AppModule {}
+// export class AppModule implements NestModule {
+//   configure(consumer: MiddlewareConsumer) {
+//     consumer
+//       .apply(CheckApiKeyMiddleware)
+//       .forRoutes({ path: '*', method: RequestMethod.ALL })
+//       .apply(CheckSignMiddleware)
+//       .forRoutes({ path: '*', method: RequestMethod.ALL })
+//   }
+// }
+export class AppModule {}
