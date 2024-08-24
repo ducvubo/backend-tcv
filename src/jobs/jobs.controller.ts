@@ -18,6 +18,7 @@ export class JobsController {
   @ResponseMessage('Tạo tin tuyển dụng mới')
   @UseGuards(AuthGuardCompany)
   async createJob(@Body() createJobDto: CreateJobDto, @Company() company: ICompany) {
+    // console.log(createJobDto)
     return await this.jobsService.createJob(createJobDto, company)
   }
 
@@ -54,13 +55,13 @@ export class JobsController {
     return await this.jobsService.deleteJob({ id, company })
   }
 
-  // @Post('test')
-  // @ResponseMessage('Test rabitmq')
-  // async test(@Body() body: any) {
-  //   return {
-  //     message: 'ok ok ok'
-  //   }
-  // }
+  @Get('test')
+  @ResponseMessage('Test rabitmq')
+  async test() {
+    return {
+      message: 'Test rabitmq'
+    }
+  }
 
   // @Post('test1')
   // @ResponseMessage('Test elastic search')

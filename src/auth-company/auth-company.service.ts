@@ -189,7 +189,6 @@ export class AuthCompanyService {
     const key: IRefreshToken | null = await this.refreshSlaveModel
       .findOne({ rf_refresh_token: cp_refresh_token })
       .lean()
-
     if (!key) throw new HttpException('Token không tồn tại', HttpStatus.UNAUTHORIZED)
     return {
       key_access_token: key.rf_public_key_access_token,

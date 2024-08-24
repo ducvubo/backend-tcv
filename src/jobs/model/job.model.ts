@@ -18,15 +18,75 @@ export class Job extends SampleSchema {
   job_slug: string
 
   //lương
-  @Prop({ type: String, required: true })
-  job_wage: string
+  @Prop({ type: Object, required: true })
+  job_wage: {
+    option: 'range' | 'down' | 'up' | 'negotiable' //mức lương | dưới | trên | thỏa thuận
+    range?: {
+      min: number
+      max: number
+    }
+    amount?: number
+  }
 
   //địa chỉ ngắn gọn
   @Prop({ type: String, required: true })
   job_address_summary: string
 
   //yêu cầu kinh nghiệm
-  @Prop({ type: String, required: true })
+  @Prop({
+    type: String,
+    required: true,
+    enum: [
+      'Không yêu cầu kinh nghiệm',
+      'Dưới 1 năm kinh nghiệm',
+      'Dưới 1,5 năm kinh nghiệm',
+      'Dưới 2 năm kinh nghiệm',
+      'Dưới 2,5 năm kinh nghiệm',
+      'Dưới 3 năm kinh nghiệm',
+      'Dưới 3,5 năm kinh nghiệm',
+      'Dưới 4 năm kinh nghiệm',
+      'Dưới 5 năm kinh nghiệm',
+      'Dưới 5,5 năm kinh nghiệm',
+      'Dưới 6 năm kinh nghiệm',
+      'Dưới 6,5 năm kinh nghiệm',
+      'Dưới 7 năm kinh nghiệm',
+      'Dưới 7,5 năm kinh nghiệm',
+      'Dưới 8 năm kinh nghiệm',
+      'Dưới 8,5 năm kinh nghiệm',
+      'Dưới 9 năm kinh nghiệm',
+      'Dưới 9,5 năm kinh nghiệm',
+      'Dưới 10 năm kinh nghiệm',
+      'Trên 10 năm kinh nghiệm',
+      'Trên 9 năm kinh nghiệm',
+      'Trên 8 năm kinh nghiệm',
+      'Trên 7 năm kinh nghiệm',
+      'Trên 6 năm kinh nghiệm',
+      'Trên 5 năm kinh nghiệm',
+      'Trên 4 năm kinh nghiệm',
+      'Trên 3 năm kinh nghiệm',
+      'Trên 2 năm kinh nghiệm',
+      'Trên 1 năm kinh nghiệm',
+      'Trên 9,5 năm kinh nghiệm',
+      'Trên 8,5 năm kinh nghiệm',
+      'Trên 7,5 năm kinh nghiệm',
+      'Trên 6,5 năm kinh nghiệm',
+      'Trên 5,5 năm kinh nghiệm',
+      'Trên 4,5 năm kinh nghiệm',
+      'Trên 3,5 năm kinh nghiệm',
+      'Trên 2,5 năm kinh nghiệm',
+      'Trên 1,5 năm kinh nghiệm',
+      'Từ 0 - 1 năm kinh nghiệm',
+      'Từ 1 - 2 năm kinh nghiệm',
+      'Từ 2 - 3 năm kinh nghiệm',
+      'Từ 3 - 4 năm kinh nghiệm',
+      'Từ 4 - 5 năm kinh nghiệm',
+      'Từ 5 - 6 năm kinh nghiệm',
+      'Từ 6 - 7 năm kinh nghiệm',
+      'Từ 7 - 8 năm kinh nghiệm',
+      'Từ 8 - 9 năm kinh nghiệm',
+      'Từ 9 - 10 năm kinh nghiệm'
+    ]
+  })
   job_exp: string
 
   //chức vụ
@@ -95,8 +155,21 @@ export class Job extends SampleSchema {
 
   //địa điểm làm việc cụ thể
   @Prop({ type: Array, required: true })
-  job_specific_location: string[]
-
+  job_specific_location: {
+    job_location_province: {
+      id: string
+      full_name: string
+    }
+    job_location_district: {
+      id: string
+      full_name: string
+    }
+    job_location_ward: {
+      id: string
+      full_name: string
+    }
+    job_specific_address: string
+  }[]
   //trạng thái publish
   @Prop({ type: Boolean, required: true, default: false })
   job_isPublished: boolean

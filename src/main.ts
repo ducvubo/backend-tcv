@@ -8,6 +8,7 @@ import { ValidationPipe, VersioningType } from '@nestjs/common'
 import { initRedis } from './init/init.redis'
 import * as bodyParser from 'body-parser'
 import { connectQueueCompany, ConnectQueueJob } from './utils/rabbitmq.check'
+import { AllExceptionsFilter } from './filter/global.filter'
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
 
@@ -24,12 +25,12 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..', 'public'))
   app.setBaseViewsDir(join(__dirname, '..', 'views'))
   app.setViewEngine('ejs')
-  app.enableCors({
-    origin: 'http://localhost:3000',
-    methods: 'GET, HEAD, PUT, PATCH, POST, DELETE',
-    preflightContinue: false,
-    credentials: true
-  })
+  // app.enableCors({
+  //   origin: 'http://localhost:3000',
+  //   methods: 'GET, HEAD, PUT, PATCH, POST, DELETE',
+  //   preflightContinue: false,
+  //   credentials: true
+  // })
   app.enableCors()
   initRedis()
 
@@ -39,16 +40,7 @@ async function bootstrap() {
     defaultVersion: ['1', '2']
   })
 
-  app.use((error, req, res, next) => {
-    const statusCode = error.status || 500
-    return res.status(statusCode).json({
-      status: 'error',
-      code: statusCode,
-      stack: error.stack,
-      message: error.message || 'Internal Server Error'
-    })
-  })
-
+  app.useGlobalFilters(new AllExceptionsFilter())
   await app.listen(configService.get<string>('PORT'))
 }
 bootstrap()

@@ -12,7 +12,6 @@ export class AuthCompanyController {
   @Post('/login')
   @ResponseMessage('Đăng nhập công ty')
   async login(@Body() body: loginCompanyDto) {
-    console.log(body)
     return await this.authCompanyService.loginCompany(body)
   }
 

@@ -102,6 +102,14 @@ export class CompaniesService {
     return companyMongo
   }
 
+  async getCompanyByIdAuth({ id }: { id: any }) {
+    if (!mongoose.Types.ObjectId.isValid(id)) throw new HttpException('Id không hợp lệ', HttpStatus.BAD_REQUEST)
+
+    const companyMongo = await this.companyReadRepository.getCompanyByIdAuth({ _id: id })
+
+    return companyMongo
+  }
+
   async updateCompany(_id: string, updateCompany: UpdateCompanyDto, user: IUser) {
     if (!_id) throw new HttpException('Id không h��p lệ', HttpStatus.BAD_REQUEST)
     if (!mongoose.Types.ObjectId.isValid(_id)) throw new HttpException('Id không hợp lệ', HttpStatus.BAD_REQUEST)
@@ -132,5 +140,13 @@ export class CompaniesService {
 
   async getCompanyByEmail(email: string) {
     return await this.companyReadRepository.getCompanyByEmail({ company_email: email })
+  }
+
+  async getAllCompnay() {
+    return await this.companyReadRepository.getAllCompanyNoPagination()
+  }
+
+  async getCompanyBySlug({ company_slug }: { company_slug: string }) {
+    return await this.companyReadRepository.getCompanyBySlug({ company_slug })
   }
 }

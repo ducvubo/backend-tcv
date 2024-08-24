@@ -4,7 +4,6 @@ import { Request, Response, NextFunction } from 'express'
 import * as md5 from 'md5'
 import { SIGN } from 'src/constant/key.redis'
 import { getCacheIO, setCacheIOExpiration } from 'src/utils/cache'
-import { enc, AES } from 'crypto-js'
 @Injectable()
 export class CheckSignMiddleware implements NestMiddleware {
   constructor() {}
@@ -26,13 +25,13 @@ export class CheckSignMiddleware implements NestMiddleware {
   }
 
   async use(req: Request, res: Response, next: NextFunction) {
-    const keyToken = 'vuducbokeytoken'
+    // const keyToken = 'vuducbokeytoken'
     const signClient = req.headers['sign']
     const nonce = req.headers['nonce']
     const stime: any = req.headers['stime']
 
     const signExist = await getCacheIO({ key: `${SIGN}${signClient}` })
-    if (signExist) throw new HttpException('Sign token không hợp lệ1', HttpStatus.FORBIDDEN)
+    if (signExist) throw new HttpException('Sign token không hợp lệ12', HttpStatus.FORBIDDEN)
 
     if (!stime || !signClient || !nonce) throw new HttpException('Sign token không hợp lệ', HttpStatus.FORBIDDEN)
 
@@ -42,27 +41,28 @@ export class CheckSignMiddleware implements NestMiddleware {
     const signServer = this.genSign({ nonce, stime })
     if (signClient !== signServer) throw new HttpException('Sign token không hợp lệ', HttpStatus.FORBIDDEN)
 
-    const contentType = req.headers['content-type']
-    if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
-      if (contentType?.includes('application/json')) {
-        const body = req.body
-        if (body) {
-          if (body.data) {
-            try {
-              const bytes = AES.decrypt(body.data, `${signServer}${nonce}${keyToken}`)
-              const decodeData = JSON.parse(bytes.toString(enc.Utf8))
-              req.body = decodeData
-              await setCacheIOExpiration({ key: `${SIGN}${signClient}`, value: signClient, expirationInSeconds: 20 })
-            } catch (error) {
-              throw new HttpException('Sign token không hợp lệ', HttpStatus.FORBIDDEN)
-            }
-          } else {
-            throw new HttpException('Sign token không hợp lệ', HttpStatus.FORBIDDEN)
-          }
-        }
-      }
-    }
+    // const contentType = req.headers['content-type']
+    // if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
+    //   if (contentType?.includes('application/json')) {
+    //     const body = req.body
+    //     if (body) {
+    //       if (body.data) {
+    //         try {
+    //           const bytes = AES.decrypt(body.data, `${signServer}${nonce}${keyToken}`)
+    //           const decodeData = JSON.parse(bytes.toString(enc.Utf8))
+    //           req.body = decodeData
+    //           await setCacheIOExpiration({ key: `${SIGN}${signClient}`, value: signClient, expirationInSeconds: 20 })
+    //         } catch (error) {
+    //           throw new HttpException('Sign token không hợp lệ', HttpStatus.FORBIDDEN)
+    //         }
+    //       } else {
+    //         throw new HttpException('Sign token không hợp lệ', HttpStatus.FORBIDDEN)
+    //       }
+    //     }
+    //   }
+    // }
     await setCacheIOExpiration({ key: `${SIGN}${signClient}`, value: signClient, expirationInSeconds: 20 })
+
     next()
   }
 }

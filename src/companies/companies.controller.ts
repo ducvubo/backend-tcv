@@ -23,6 +23,18 @@ export class CompaniesController {
   async getAllCompanies(@Query('current') currentPage: string, @Query('pageSize') limit: string, @Query() qs: string) {
     return await this.companiesService.getAllCompanies(+currentPage, +limit, qs)
   }
+  @Get('/all')
+  @ResponseMessage('Lấy danh sách công ty')
+  async getAllCompnay() {
+    return await this.companiesService.getAllCompnay()
+  }
+
+  @Get('/slug/:company_slug')
+  @ResponseMessage('Lấy thông tin công ty theo slug')
+  async getCompanyBySlug(@Param('company_slug') company_slug: string) {
+    console.log(company_slug)
+    return await this.companiesService.getCompanyBySlug({ company_slug })
+  }
 
   @Get(':id')
   @ResponseMessage('Lấy thông tin công ty theo ID')

@@ -14,8 +14,8 @@ export class UserController {
 
   @Post()
   @ResponseMessage('Tạo mới user')
-  create(@Body() createUserDto: CreateUserDto) {
-    const newUser = this.usersService.create(createUserDto)
+  async create(@Body() createUserDto: CreateUserDto) {
+    const newUser = await this.usersService.create(createUserDto)
     return newUser
   }
 
@@ -26,7 +26,7 @@ export class UserController {
   }
 
   @Get('/infor-user')
-  @ResponseMessage('Get infor user')
+  @ResponseMessage('Get info user')
   @UseGuards(AuthGuardWithSSO)
   async inforUser(@User() user: IUser) {
     return user

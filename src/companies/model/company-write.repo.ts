@@ -5,6 +5,7 @@ import { Model } from 'mongoose'
 import { CreateCompanyDto } from '../dto/create_company.dto'
 import { IUser } from 'src/user/user.interface'
 import { UpdateCompanyDto } from '../dto/update_company.dto'
+import { generateSlug } from 'src/utils'
 
 export class CompanyWriteRepository {
   constructor(@InjectModel(Company.name, CONNECTION_MASTER) private companyMaterModel: Model<CompanyDocument>) {}
@@ -25,11 +26,15 @@ export class CompanyWriteRepository {
       company_code_fiscal,
       company_recruitment_status
     } = createCompanyDto
+
+    const slug = generateSlug(company_name)
+
     return await this.companyMaterModel.create({
       company_email,
       company_phone,
       company_password,
       company_name,
+      company_slug: slug,
       company_avatar,
       company_banner,
       company_description,

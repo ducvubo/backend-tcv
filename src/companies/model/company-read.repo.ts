@@ -41,8 +41,40 @@ export class CompanyReadRepository {
     return this.companySlaveModel
       .findOne({ _id, isDeleted: false, company_verify: 'verify', company_active: true })
       .select(
-        '-company_password -createdAt -createdBy -updatedAt -__v -isDeleted -deletedBy -company_active -company_verify'
+        '-company_password -createdAt -createdBy -updatedAt -__v -isDeleted -deletedBy -company_active -company_verify '
       )
+      .exec()
+  }
+
+  async getCompanyByIdAuth({ _id }: { _id: string }) {
+    return this.companySlaveModel
+      .findOne({ _id, isDeleted: false, company_verify: 'verify', company_active: true })
+      .select(
+        '-company_password -createdAt -createdBy -updatedAt -__v -isDeleted -deletedBy -company_active -company_verify -company_banner -company_avatar'
+      )
+      .exec()
+  }
+
+  async getAllCompanyNoPagination() {
+    return await this.companySlaveModel
+      .find({
+        isDeleted: false
+        // company_verify: 'verify',
+        // company_active: true,
+        // company_status: 'Active'
+      })
+      .select('company_avatar company_banner company_name company_description company_slug')
+  }
+
+  async getCompanyBySlug({ company_slug }: { company_slug: string }) {
+    return await this.companySlaveModel
+      .findOne({
+        company_slug
+        // isDeleted: false,
+        // company_verify: 'verify',
+        // company_active: true
+      })
+      .select('-company_password -createdAt -createdBy -updatedAt -__v -isDeleted -deletedBy')
       .exec()
   }
 }
