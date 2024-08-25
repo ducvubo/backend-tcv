@@ -67,6 +67,8 @@ export class CompanyWriteRepository {
       company_website
     } = updateCompany
 
+    const slug = generateSlug(company_name)
+
     return await this.companyMaterModel
       .findByIdAndUpdate(
         _id,
@@ -74,6 +76,7 @@ export class CompanyWriteRepository {
           company_address,
           company_avatar,
           company_banner,
+          company_slug: slug,
           company_business_field,
           company_code_fiscal,
           company_description,

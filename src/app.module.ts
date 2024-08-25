@@ -13,6 +13,9 @@ import { CheckApiKeyMiddleware } from './middleware/checkApiKey.middleware'
 import { ApikeysModule } from './apikeys/apikeys.module'
 import { AuthCompanyModule } from './auth-company/auth-company.module'
 import { JobsModule } from './jobs/jobs.module'
+import { TagProfessionModule } from './tag-profession/tag-profession.module'
+import { TagSkillsModule } from './tag-skills/tag-skills.module'
+import { TagAreasModule } from './tag-areas/tag-areas.module'
 
 @Module({
   imports: [
@@ -41,18 +44,21 @@ import { JobsModule } from './jobs/jobs.module'
     UploadModule,
     ApikeysModule,
     AuthCompanyModule,
-    JobsModule
+    JobsModule,
+    TagProfessionModule,
+    TagSkillsModule,
+    TagAreasModule
   ],
   controllers: [AppController],
   providers: [AppService]
 })
-// export class AppModule implements NestModule {
-//   configure(consumer: MiddlewareConsumer) {
-//     consumer
-//       .apply(CheckApiKeyMiddleware)
-//       .forRoutes({ path: '*', method: RequestMethod.ALL })
-//       .apply(CheckSignMiddleware)
-//       .forRoutes({ path: '*', method: RequestMethod.ALL })
-//   }
-// }
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(CheckApiKeyMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL })
+      .apply(CheckSignMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL })
+  }
+}
+// export class AppModule {}

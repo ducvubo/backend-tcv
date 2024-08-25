@@ -115,15 +115,24 @@ export class Job extends SampleSchema {
 
   //ngành nghề
   @Prop({ type: Array, required: true })
-  job_career: string[]
+  job_career: {
+    name: string
+    _id: mongoose.Schema.Types.ObjectId
+  }[]
 
   //kỹ năng cần có
   @Prop({ type: Array, required: true })
-  job_skills: string[]
+  job_skills: {
+    name: string
+    _id: mongoose.Schema.Types.ObjectId
+  }[]
 
   //khu vực
   @Prop({ type: Array, required: true })
-  job_area: string[]
+  job_area: {
+    name: string
+    _id: mongoose.Schema.Types.ObjectId
+  }[]
 
   //mô tả công việc
   @Prop({ type: Object, required: true })

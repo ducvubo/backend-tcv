@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
+import slugify from 'slugify'
 
 export const getInfoData = ({ fileds = [], object = {} }) => {
   return _.pick(object, fileds)
@@ -7,13 +8,14 @@ export const getInfoData = ({ fileds = [], object = {} }) => {
 
 export const generateSlug = (input: string): string => {
   // Chuyển chuỗi thành chữ thường và loại bỏ dấu tiếng Việt
-  const slug = input
-    .toLowerCase()
-    .normalize('NFD') // Chuẩn hóa chuỗi
-    .replace(/[\u0300-\u036f]/g, '') // Loại bỏ dấu
-    .replace(/[^a-z0-9\s-]/g, '') // Loại bỏ ký tự đặc biệt
-    .trim() // Loại bỏ khoảng trắng đầu cuối
-    .replace(/\s+/g, '-') // Thay thế khoảng trắng bằng dấu gạch ngang
+  const slug = slugify(input, {
+    replacement: '-', // replace spaces with replacement character, defaults to `-`
+    remove: undefined, // remove characters that match regex, defaults to `undefined`
+    lower: false, // convert to lower case, defaults to `false`
+    strict: false, // strip special characters except replacement, defaults to `false`
+    locale: 'vi', // language code of the locale to use
+    trim: true // trim leading and trailing replacement chars, defaults to `true`
+  })
 
   const uuid = uuidv4()
 

@@ -4,6 +4,7 @@ import { Model } from 'mongoose'
 import { Job, JobDocument } from './job.model'
 import { CreateJobDto } from '../dto/create-job.dto'
 import { ICompany } from 'src/companies/company.interface'
+import { generateSlug } from 'src/utils'
 
 export class JobWriteRepository {
   constructor(@InjectModel(Job.name, CONNECTION_MASTER) private jobMaterModel: Model<JobDocument>) {}
@@ -32,12 +33,15 @@ export class JobWriteRepository {
       job_isDraft
     } = createJobDto
 
+    const slug = generateSlug(job_name)
+
     const { company_email, _id } = company
     const newJob = await this.jobMaterModel.create({
       job_company_id: _id,
       job_name,
       job_wage,
       job_address_summary,
+      job_slug: slug,
       job_exp,
       job_rank,
       job_quantity,
@@ -87,6 +91,8 @@ export class JobWriteRepository {
       job_isDraft
     } = updateJobDto
 
+    const slug = generateSlug(job_name)
+
     const { company_email, _id } = company
     return this.jobMaterModel
       .findByIdAndUpdate(
@@ -96,6 +102,7 @@ export class JobWriteRepository {
           job_wage,
           job_address_summary,
           job_exp,
+          job_slug: slug,
           job_rank,
           job_quantity,
           job_working_type,

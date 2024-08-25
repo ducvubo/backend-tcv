@@ -111,6 +111,16 @@ class Location {
   full_name: string
 }
 
+class Tag {
+  @IsNotEmpty({ message: 'ID không được để trống' })
+  @IsString({ message: 'ID phải là một chuỗi' })
+  _id: string
+
+  @IsNotEmpty({ message: 'Tên không được để trống' })
+  @IsString({ message: 'Tên phải là một chuỗi' })
+  name: string
+}
+
 class JobSpecificLocation {
   @ValidateNested()
   @Type(() => Location)
@@ -176,15 +186,15 @@ export class CreateJobDto {
 
   @IsNotEmpty({ message: 'Ngành nghề không được để trống' })
   @IsArray({ message: 'Ngành nghề phải là mảng' })
-  job_career: string[]
+  job_career: Tag[]
 
   @IsNotEmpty({ message: 'Kỹ năng không được để trống' })
   @IsArray({ message: 'Kỹ năng phải là mảng' })
-  job_skills: string[]
+  job_skills: Tag[]
 
   @IsNotEmpty({ message: 'Khu vực làm việc không được để trống' })
   @IsArray({ message: 'Khu vực làm việc phải là mảng' })
-  job_area: string[]
+  job_area: Tag[]
 
   @IsNotEmpty({ message: 'Mô tả công việc không được để trống' })
   @IsObject({ message: 'Mô tả công việc phải là object' })

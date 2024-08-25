@@ -8,7 +8,7 @@ import { ValidationPipe, VersioningType } from '@nestjs/common'
 import { initRedis } from './init/init.redis'
 import * as bodyParser from 'body-parser'
 import { connectQueueCompany, ConnectQueueJob } from './utils/rabbitmq.check'
-import { AllExceptionsFilter } from './filter/global.filter'
+// import { AllExceptionsFilter } from './filter/global.filter'
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
 
@@ -40,7 +40,7 @@ async function bootstrap() {
     defaultVersion: ['1', '2']
   })
 
-  app.useGlobalFilters(new AllExceptionsFilter())
+  // app.useGlobalFilters(new AllExceptionsFilter())
   await app.listen(configService.get<string>('PORT'))
 }
 bootstrap()
