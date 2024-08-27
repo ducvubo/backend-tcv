@@ -91,8 +91,6 @@ export class JobWriteRepository {
       job_isDraft
     } = updateJobDto
 
-    const slug = generateSlug(job_name)
-
     const { company_email, _id } = company
     return this.jobMaterModel
       .findByIdAndUpdate(
@@ -102,7 +100,6 @@ export class JobWriteRepository {
           job_wage,
           job_address_summary,
           job_exp,
-          job_slug: slug,
           job_rank,
           job_quantity,
           job_working_type,

@@ -28,7 +28,7 @@ export const connectQueueCompany = async () => {
       }
     })
     await channel.sendToQueue('CompanyQueueProcess', Buffer.from(JSON.stringify('test')), {
-      expiration: '1'
+      expiration: 1
     })
 
     await connection.close()

@@ -214,10 +214,8 @@ export class CreateJobDto {
   @Type(() => Markdown)
   job_benefits: Markdown
 
-  // @IsNotEmptyObject({}, { message: 'Yêu cầu thêm không được để trống' })
   @IsObject({ message: 'Yêu cầu thêm phải là object' })
   @ValidateNested()
-  // @Type(() => Markdown)
   job_additional_requirements: Markdown
 
   @ValidateNested({ each: true })

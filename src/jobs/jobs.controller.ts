@@ -14,6 +14,23 @@ export class JobsController {
     private readonly elasticsearchService: ElasticsearchService
   ) {}
 
+  @Post('test1')
+  @ResponseMessage('Test elastic search')
+  async search(q: string) {
+    try {
+      const result = await this.elasticsearchService.search({
+        index: 'JobSerach'
+      })
+      
+      // const result = await this.elasticsearchService.indices.delete({
+      //   index:
+      // })
+      return result
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
+
   @Post()
   @ResponseMessage('Tạo tin tuyển dụng mới')
   @UseGuards(AuthGuardCompany)
@@ -62,20 +79,4 @@ export class JobsController {
       message: 'Test rabitmq'
     }
   }
-
-  // @Post('test1')
-  // @ResponseMessage('Test elastic search')
-  // async search(q: string) {
-  //   try {
-  //     const result = await this.elasticsearchService.search({
-  //       index: 'els_jobsearchcompanies'
-  //     })
-  //     // const result = await this.elasticsearchService.indices.delete({
-  //     //   index:
-  //     // })
-  //     return result
-  //   } catch (error) {
-  //     console.log('error', error)
-  //   }
-  // }
 }

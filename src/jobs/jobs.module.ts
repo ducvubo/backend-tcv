@@ -20,7 +20,7 @@ import { ElasticsearchModule } from '@nestjs/elasticsearch'
         node: 'https://localhost:9200',
         auth: {
           username: 'elastic',
-          password: 'nRBYcuMUg=d=oQUG-FfS'
+          password: 'Elyh5fI7P0Vt+EF50oVY'
         },
         tls: {
           rejectUnauthorized: false

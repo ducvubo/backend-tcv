@@ -179,6 +179,7 @@ export class Job extends SampleSchema {
     }
     job_specific_address: string
   }[]
+
   //trạng thái publish
   @Prop({ type: Boolean, required: true, default: false })
   job_isPublished: boolean

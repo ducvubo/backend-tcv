@@ -26,8 +26,8 @@ import { TagAreasModule } from './tag-areas/tag-areas.module'
       inject: [ConfigService],
       connectionName: CONNECTION_MASTER,
       useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGO_URL_MASTER'),
-        directConnection: true
+        uri: configService.get<string>('MONGO_URL_MASTER')
+        // directConnection: true
       })
     }),
     MongooseModule.forRootAsync({
@@ -35,8 +35,8 @@ import { TagAreasModule } from './tag-areas/tag-areas.module'
       inject: [ConfigService],
       connectionName: CONNECTION_SLAVE,
       useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGO_URL_SLAVE'),
-        directConnection: true
+        uri: configService.get<string>('MONGO_URL_SLAVE')
+        // directConnection: true
       })
     }),
     UserModule,

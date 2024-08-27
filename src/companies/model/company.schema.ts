@@ -46,7 +46,21 @@ export class Company extends SampleSchema {
   company_website: string
 
   @Prop({ type: Array, required: true })
-  company_address: string[]
+  company_address: {
+    company_address_province: {
+      id: string
+      full_name: string
+    }
+    company_address_district: {
+      id: string
+      full_name: string
+    }
+    company_address_ward: {
+      id: string
+      full_name: string
+    }
+    company_address_specific: string
+  }[]
 
   @Prop({ type: String, required: true })
   company_employee_total: string

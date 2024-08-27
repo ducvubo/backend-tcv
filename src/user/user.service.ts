@@ -63,7 +63,7 @@ export class UserService {
       }
     })
     const data = await res.json()
-    if (data.statusCode === 401) throw new UnauthorizedException('Token không hợp lệ2')
+    if (data.statusCode === 401) throw new UnauthorizedException('Token không hợp lệ3')
 
     const isEmailExist = await this.userSlaveModel.findOne({ email: data.data.email, isDeleted: false }).lean()
 

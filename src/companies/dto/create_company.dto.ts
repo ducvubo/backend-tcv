@@ -1,11 +1,32 @@
-import { ArrayMinSize, IsArray, IsEmail, IsNotEmpty, IsString, IsStrongPassword } from 'class-validator'
+import { Type } from 'class-transformer'
+import { ArrayMinSize, IsEmail, IsNotEmpty, IsString, IsStrongPassword, ValidateNested } from 'class-validator'
 
-export class CompanyAddress {
-  @IsString({ message: 'Địa chỉ phải là chuỗi' })
-  address: string
+class Location {
+  @IsNotEmpty({ message: 'ID không được để trống' })
+  @IsString({ message: 'ID phải là một chuỗi' })
+  id: string
 
-  @IsString({ message: 'Tọa độ phải là chuỗi' })
-  coordinates: string
+  @IsNotEmpty({ message: 'Tên không được để trống' })
+  @IsString({ message: 'Tên phải là một chuỗi' })
+  full_name: string
+}
+
+class CompanyAddress {
+  @ValidateNested()
+  @Type(() => Location)
+  company_address_province: Location
+
+  @ValidateNested()
+  @Type(() => Location)
+  company_address_district: Location
+
+  @ValidateNested()
+  @Type(() => Location)
+  company_address_ward: Location
+
+  @IsNotEmpty({ message: 'Địa chỉ cụ thể không được để trống' })
+  @IsString({ message: 'Địa chỉ cụ thể phải là một chuỗi' })
+  company_address_specific: string
 }
 
 export class CreateCompanyDto {
@@ -62,12 +83,11 @@ export class CreateCompanyDto {
   @IsString({ message: 'Website công ty phải là chuỗi' })
   company_website: string
 
-  @IsNotEmpty({ message: 'Địa chỉ công ty không được để trống' })
-  @IsArray({ message: 'Địa chỉ công ty phải là mảng' })
-  // @ValidateNested({ each: true })
-  // @Type(() => CompanyAddress)
-  @ArrayMinSize(1, { message: 'Địa chỉ công ty phải có ít nhất một phần tử' })
-  company_address: string[]
+  @ValidateNested({ each: true })
+  @Type(() => CompanyAddress)
+  @IsNotEmpty({ message: 'Danh sách địa điểm không được để trống' })
+  @ArrayMinSize(1, { message: 'Danh sách địa điểm phải có ít nhất một địa điểm' })
+  company_address: CompanyAddress[]
 
   @IsNotEmpty({ message: 'Số lượng nhân viên công ty không được để trống' })
   @IsString({ message: 'Số lượng nhân viên công ty phải là chuỗi' })
