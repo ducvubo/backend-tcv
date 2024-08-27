@@ -27,7 +27,7 @@ export class JobQueue {
         }
       })
       await channel.sendToQueue('JobQueueProcess', Buffer.from(JSON.stringify(data)), {
-        expiration: '5000'
+        expiration: 50000
       })
       await connection.close()
     } catch (error) {

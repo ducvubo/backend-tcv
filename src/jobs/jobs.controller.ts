@@ -21,7 +21,6 @@ export class JobsController {
       const result = await this.elasticsearchService.search({
         index: 'JobSerach'
       })
-      
       // const result = await this.elasticsearchService.indices.delete({
       //   index:
       // })
